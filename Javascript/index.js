@@ -1,5 +1,6 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 
 var bird = new Image();
 var birdDown = new Image();
@@ -31,12 +32,13 @@ var birdScore = 0;
 var start = false;
 var animation;
 var tickCount = 0;
+var compteur = 0;
 var oldPosition = 150;
 
 const letsFly = (e) => {
   if(e.key != "Enter"  && start){
     oldPosition = birdY;
-    birdY -= 34;
+    birdY -= 30;
     fly.play();
   }
   if(e.key == "Enter"){
@@ -93,7 +95,7 @@ const intro = () => {
 const Game = () => {
   console.log(velocity);
   loadBackground();
-  for(var x = 0; x < pipe.length; x++){
+  for(var x = 0 + compteur; x < pipe.length; x++){
     constant = pipeNorth.height + betweenThePipe;
     ctx.drawImage(pipeNorth, pipe[x].x, pipe[x].y);
     ctx.drawImage(pipeSouth, pipe[x].x, pipe[x].y + constant);
@@ -104,9 +106,6 @@ const Game = () => {
         y : Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height
       });
     }
-    if(pipe[x].x == -100){
-      pipe.splice(x, 1);
-    }
     if(birdY >= (canvas.height - ground.height - 22) || (birdY >= pipe[x].y + constant - 20 && birdX >= pipe[x].x - 30  && birdX <= pipe[x].x + pipeNorth.width) ||  (birdY <= pipe[x].y + pipeNorth.height - 10 && birdX >= pipe[x].x - 30  && birdX <= pipe[x].x + pipeNorth.width) ){
       location.reload();
     }
@@ -114,9 +113,14 @@ const Game = () => {
       birdScore++;
       score.play();
     }
+    if(pipe[x].x == -100){
+      compteur++;
+    }
+
   }
   ctx.drawImage(ground ,0, canvas.height - ground.height);
   birdY += velocity;
+  oldPosition += velocity;
   tickCount += 1;
   if(tickCount <= 10){
     ctx.drawImage(bird, birdX, birdY);
@@ -132,9 +136,7 @@ const Game = () => {
   animation = requestAnimationFrame(Game);
 }
 
-
 const startTheGame = () => {
   intro();
 }
-
 startTheGame();
